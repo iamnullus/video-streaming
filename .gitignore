@@ -1,0 +1,6 @@
+backend/video/
+backend/thumbnail/
+backend/node_modules/
+backend/profile/
+backend/package-lock.json
+backend/.env
