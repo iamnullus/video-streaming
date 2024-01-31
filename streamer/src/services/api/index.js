@@ -1,24 +1,72 @@
-import axios from "axios"
+exports.SendJsonPostRequest = async (url, body = {}, headers = {}) => {
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify({ ...body }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        ...headers,
+      },
+    });
 
+    const responseData = await response?.json();
 
-export const useApiService=()=>{
-    const baseUrl = "https://video-tube.onrender.com";
-    const get = async(endpoint)=>{
-        return await axios.get(`${baseUrl}${endpoint}`);
+    if (!response.ok) {
+      throw responseData;
     }
 
-    const post = async(endpoint, data) =>{
-        console.log(`${baseUrl}${endpoint}`);
-        return axios.post(`${baseUrl}${endpoint}`, data);
+    return { responseData, response };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.SendFormDataPostRequest = async (
+  url,
+  body = new FormData(),
+  headers = {}
+) => {
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      body: body,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        ...headers,
+      },
+    });
+
+    const responseData = await response?.json();
+
+    if (!response.ok) {
+      throw responseData;
     }
 
-    const patch = async(endpoint, data) =>{
-        return await axios.patch(`${baseUrl}${endpoint}`, data);
+    return { responseData, response };
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.SendGetRequest = async (url, headers = {}) => {
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        ...headers,
+      },
+    });
+
+    const responseData = await response?.json();
+
+    if (!response.ok) {
+      throw responseData;
     }
 
-    // TODO: IMPLEMENT DELETE
-    // const del = () =>{
-    // }
-
-    return {get, post,  patch,}
-}
+    return { responseData, response };
+  } catch (error) {
+    throw error;
+  }
+};

@@ -1,8 +1,8 @@
 // import { useState } from 'react';
-import styled from 'styled-components';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Menu, Navbar } from './components';
-import { Home, Video, Login, Signup } from './pages';
+import styled from "styled-components";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Menu, Navbar } from "./components";
+import { Home, Video, Login, Signup } from "./pages";
 
 const Main = styled.div`
   flex: 7;
@@ -18,7 +18,6 @@ const Wrapper = styled.div`
 `;
 
 function App() {
-
   return (
     <Container>
       <BrowserRouter>
@@ -39,7 +38,7 @@ function App() {
         </Main>
       </BrowserRouter>
     </Container>
-  )
+  );
 }
 
 export default App;

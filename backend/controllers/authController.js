@@ -3,6 +3,7 @@ const { ValidationError, customError } = require("../util/custom_error");
 const jwt = require("jsonwebtoken");
 const { hash, verify } = require("argon2");
 const { getFilePath } = require("../util/file_path");
+const { ResponseMessages } = require("../constant/responseMessages");
 require("dotenv").config();
 
 function TokenSiginer(user) {
@@ -35,8 +36,6 @@ exports.postSignup = async (req, res, next) => {
       name,
     };
 
-    console.log(req.file);
-
     if (req.file) {
       userCreateModel.profilePictureUrl = getFilePath(req.file);
     }
@@ -59,10 +58,8 @@ exports.postLogin = async (req, res, next) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      throw customError("User not found", 404);
+      throw customError(ResponseMessages.UserNotFound, 404);
     }
-
-    console.log(email, password, user);
 
     const comparePassword = await verify(user.passwordHash, password);
     if (!comparePassword) {

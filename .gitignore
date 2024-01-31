@@ -1,6 +1,8 @@
 backend/video/
 backend/thumbnail/
 backend/node_modules/
+streamer/node_modules/
 backend/profile/
 backend/package-lock.json
+streamer/package-lock.json
 backend/.env

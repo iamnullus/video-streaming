@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Link, useNavigate } from 'react-router-dom';
-import axios from "axios";
-import { useApiService } from "../services/api";
-
+import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [fullName, setFullName] = useState("");
@@ -12,8 +9,6 @@ const Signup = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  const { post } = useApiService();
 
   const handleFullNameChange = (e) => {
     setFullName(e.target.value);
@@ -26,55 +21,61 @@ const Signup = () => {
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
+
   const handleSignUp = () => {
-  
-    if (email === "" || password === "") {
-      setErrorMessage("Please fill in all fields");
-      return;
-    }
-    // TODO: validate email and password
-    setIsLoading(true);
-
-    setErrorMessage("");
-    const signupData = {
-      name: fullName,
-      email: email,
-      password: password,
-    };
-    post("/auth/signup", signupData).then((response) => {
-      console.log(response);
-      if (response.status === 200 || response.status === 201) {
-        
-        // localStorage.setItem('token', response.data.token);
-
-        // TODO: CHANGE TO NAVIGATE
-        window.location.href = "/";
-      }
-      else {
-        setErrorMessage("error");
-      }
-    }).catch((error) => {
-      console.log(error);
-      setErrorMessage(error.response.data.message || "error");
-    }).finally(() => {
-      setIsLoading(false);
-
-    })
+    // if (email === "" || password === "") {
+    //   setErrorMessage("Please fill in all fields");
+    //   return;
+    // }
+    // // TODO: validate email and password
+    // setIsLoading(true);
+    // setErrorMessage("");
+    // const signupData = {
+    //   name: fullName,
+    //   email: email,
+    //   password: password,
+    // };
+    // post("/auth/signup", signupData).then((response) => {
+    //   console.log(response);
+    //   if (response.status === 200 || response.status === 201) {
+    //     // localStorage.setItem('token', response.data.token);
+    //     // TODO: CHANGE TO NAVIGATE
+    //     window.location.href = "/";
+    //   }
+    //   else {
+    //     setErrorMessage("error");
+    //   }
+    // }).catch((error) => {
+    //   console.log(error);
+    //   setErrorMessage(error.response.data.message || "error");
+    // }).finally(() => {
+    //   setIsLoading(false);
+    // })
   };
 
   return (
     <Container>
       <Wrapper>
         <Title>Welcome to streamer</Title>
-        <Input placeholder="full name" value={fullName} onChange={handleFullNameChange} />
+        <Input
+          placeholder="full name"
+          value={fullName}
+          onChange={handleFullNameChange}
+        />
         <Input placeholder="email" value={email} onChange={handleEmailChange} />
-        <Input type="password" placeholder="password" value={password} onChange={handlePasswordChange} />
+        <Input
+          type="password"
+          placeholder="password"
+          value={password}
+          onChange={handlePasswordChange}
+        />
         <div>
-          {errorMessage}{
-            isLoading ? "Loading....." : ""
-          }
+          {errorMessage}
+          {isLoading ? "Loading....." : ""}
         </div>
-        <Button disabled={isLoading} onClick={handleSignUp}>Sign Up</Button>
+        <Button disabled={isLoading} onClick={handleSignUp}>
+          Sign Up
+        </Button>
         <Link to="/login">
           <AccountText>Have an account? Login</AccountText>
         </Link>
