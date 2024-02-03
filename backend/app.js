@@ -5,6 +5,7 @@ const DatabaseInit = require("./util/database_init.js");
 const authRoute = require("./routes/authRoute.js");
 const videoRoute = require("./routes/videoRoute.js");
 const userRoute = require("./routes/userRoute.js");
+const imageRoute = require("./routes/imageRoute.js");
 
 PORT = process.env.PORT || 3000;
 
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 app.use("/auth", authRoute);
 app.use("/video", videoRoute);
 app.use("/user", userRoute);
+app.use("/image", imageRoute);
 
 app.use((req, res) => {
   console.log("invalid route");

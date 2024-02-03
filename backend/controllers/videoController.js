@@ -109,6 +109,7 @@ exports.getVideoDetails = async (req, res, next) => {
       commentCount: video.commentCount,
       id: video.id,
       viewCount: video.viewCount,
+      date: video.date,
       user: {
         id: video.user._id,
         name: video.user.name,
@@ -148,6 +149,7 @@ exports.getVideosWithPagination = async (req, res, next) => {
       },
       viewCount: v.viewCount,
       thumbnail: v.thumbnailUrl,
+      date: v.date,
     }));
 
     res.json({

@@ -18,7 +18,7 @@ exports.SendJsonPostRequest = async (url, body = {}, headers = {}) => {
 
     return { responseData, response };
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 };
 

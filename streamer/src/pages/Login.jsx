@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { Button, CircularProgress, TextField, Typography } from "@mui/material";
 import { SendJsonPostRequest } from "../services/api/index.js";
 import { baseUrl } from "../services/api/constants/endpointsConstants.js";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [errorMessage, setErrorMessage] = useState(null);
@@ -9,6 +10,8 @@ const Login = () => {
 
   const emailRef = useRef();
   const passwordRef = useRef();
+
+  const navigate = useNavigate();
 
   async function HandleLogin(e) {
     e.preventDefault();
@@ -27,12 +30,18 @@ const Login = () => {
     const body = { email, password };
 
     try {
-      const { responseData, response } = SendJsonPostRequest(url, body);
+      const { responseData } = await SendJsonPostRequest(url, body);
+
+      localStorage.setItem("token", responseData.token);
+      localStorage.setItem("userId", responseData.userId);
+
+      navigate("/");
     } catch (error) {
-      console.log(error);
+      console.error(error);
+
       const errorMessage = error.message || "internal error";
+
       setErrorMessage(errorMessage);
-      console.log(errorMessage);
     } finally {
       setIsLoading(false);
     }
