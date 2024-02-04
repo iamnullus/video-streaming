@@ -12,6 +12,9 @@ class ViewedVideoRepository {
       videoId: vv.videoId,
       date: vv.date,
     }));
+
+  GetUserVideoView = async (userId, videoId) =>
+    await ViewedVideo.findOne({ userId, videoId }).sort({ date: -1 }).limit(1);
 }
 
 exports.ViewedVideoRepository = ViewedVideoRepository;

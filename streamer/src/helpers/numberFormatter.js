@@ -1,4 +1,4 @@
-exports.formatNumber = (number) => {
+exports.NumberShorterner = (number) => {
   if (isNaN(number)) {
     return "Invalid Number";
   }

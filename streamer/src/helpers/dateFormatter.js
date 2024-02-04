@@ -22,3 +22,34 @@ exports.DateFormatter = (date) => {
     return `${years} ${years === 1 ? "year" : "years"}`;
   }
 };
+
+exports.ShowFullDate = (inputDate) => {
+  const parsedDate = new Date(inputDate);
+
+  if (isNaN(parsedDate.getTime())) {
+    return "Invalid Date";
+  }
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const month = months[parsedDate.getMonth()];
+  const day = parsedDate.getDate();
+  const year = parsedDate.getFullYear();
+
+  const formattedDate = `${month} ${day}, ${year}`;
+
+  return formattedDate;
+};

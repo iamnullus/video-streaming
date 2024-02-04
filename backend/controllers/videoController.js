@@ -166,10 +166,8 @@ exports.getUserVideos = async (req, res, next) => {
   try {
     const userId = req.params.userId;
 
-    console.log("getting and validating the user");
     const user = userRepository.GetUserByIdIfExists(userId);
     if (!user) {
-      console.log("user not found");
       throw customError(ResponseMessages.userNotFound, 404);
     }
 
@@ -283,15 +281,30 @@ exports.postUserAddView = async (req, res, next) => {
       throw customError(ResponseMessages.VideoNotFound, 404);
     }
 
-    const viewed = await viewedVideoRepository.ViewAVideo(req.userId, videoId);
+    const videoView = await viewedVideoRepository.GetUserVideoView(
+      req.userId,
+      videoId
+    );
+    if (videoView) {
+      const currentDate = new Date();
+      const fiveMinutesAgo = new Date(currentDate - 5 * 60 * 1000);
 
+      console.log("demslfkasmdfasdf", videoView);
+      if (videoView.date > fiveMinutesAgo) {
+        res.status(200).send({ msg: ResponseMessages.ViewedVideo });
+        return;
+      }
+    }
+
+    const viewed = await viewedVideoRepository.ViewAVideo(req.userId, videoId);
+    console.log(viewed);
     if (!viewed) {
       throw customError(ResponseMessages.ViewingError, 500);
     }
 
     await videoRepository.IncreaseViewCount(videoId);
 
-    res.status(200).send(ResponseMessages.ViewedVideo);
+    res.status(200).send({ msg: ResponseMessages.ViewedVideo });
   } catch (error) {
     next(error);
   }

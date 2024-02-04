@@ -11,7 +11,7 @@ import React from "react";
 import { baseUrl } from "../services/api/constants/endpointsConstants";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
-import { formatNumber } from "../helpers/numberFormatter";
+import { NumberShorterner } from "../helpers/numberFormatter";
 import { DateFormatter } from "../helpers/dateFormatter";
 import { useNavigate } from "react-router-dom";
 
@@ -49,7 +49,7 @@ const GridVideoCard = ({ video }) => {
               <ThumbUpOffAltIcon />
             </Icon>
             <Typography color={"white"}>
-              {formatNumber(video.likeCount)}
+              {NumberShorterner(video.likeCount)}
             </Typography>
           </Box>
           <Box display="flex" alignItems="center" mr={1}>
@@ -57,7 +57,7 @@ const GridVideoCard = ({ video }) => {
               <ThumbDownOffAltIcon />
             </Icon>
             <Typography color={"white"}>
-              {formatNumber(video.dislikeCount)}
+              {NumberShorterner(video.dislikeCount)}
             </Typography>
           </Box>
           <Box display="flex" alignItems="center" mr={1}>
@@ -65,7 +65,7 @@ const GridVideoCard = ({ video }) => {
               <OndemandVideo />
             </Icon>
             <Typography color={"white"}>
-              {formatNumber(video.viewCount)}
+              {NumberShorterner(video.viewCount)}
             </Typography>
           </Box>
           <Box display="flex" alignItems="center" mr={1}>

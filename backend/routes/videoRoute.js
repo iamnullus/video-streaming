@@ -1,18 +1,12 @@
 const { Router } = require("express");
 const { body } = require("express-validator");
-const {
-  VideoSetup,
-  ImageSetup,
-  FileSetup,
-} = require("../middlewares/multer_setup.js");
+const { FileSetup } = require("../middlewares/multer_setup.js");
 
 const videoController = require("../controllers/videoController.js");
 const userAuth = require("../middlewares/userAuth.js");
 
 const router = Router();
 
-const multerImageUpload = ImageSetup("thumbnail");
-const multerVideoUpload = VideoSetup("video");
 const multerFileUpload = FileSetup("video", "thumbnail");
 
 router.post(
