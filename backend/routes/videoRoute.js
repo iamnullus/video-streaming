@@ -42,6 +42,8 @@ router.post(
   videoController.postDeleteComment
 );
 
+router.get("/comments/:videoId", videoController.getVideoComments);
+
 router.post("/view/:videoId", userAuth, videoController.postUserAddView);
 
 router.post("/guest/view/:videoId", userAuth, videoController.postGuestAddView);

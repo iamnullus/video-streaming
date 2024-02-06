@@ -11,7 +11,7 @@ import {
 import { useParams } from "react-router-dom";
 import { baseUrl } from "../services/api/constants/endpointsConstants";
 import { SendGetRequest, SendJsonPostRequest } from "../services/api";
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import { NumberShorterner } from "../helpers/numberFormatter";
 import { ShowFullDate } from "../helpers/dateFormatter";
 import { ResponseMessages } from "../services/constants/responseMessages";
@@ -21,7 +21,6 @@ function Video() {
   const [isLikedVideo, setIsLikedVideo] = useState(false);
   const [isDislikedVideo, setIsDislikedVideo] = useState(false);
   const [videoNotFound, setVideoNotFound] = useState(false);
-  const [addedView, setAddedView] = useState(false);
 
   const { id } = useParams();
 
@@ -36,8 +35,27 @@ function Video() {
       console.error(error);
     }
   }
+
+  async function GetLikeStatus() {
+    const url = `${baseUrl}/user/video-likes-status/${id}`;
+    try {
+      const { responseData } = await SendGetRequest(url);
+
+      setIsDislikedVideo(responseData.isDislike);
+      setIsLikedVideo(responseData.isLiked);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    GetVideoDetails();
+    if (localStorage.getItem("token")) {
+      GetLikeStatus();
+    }
+  }, []);
+
   async function AddVideoView() {
-    await setAddedView(true);
     let url;
     if (localStorage.getItem("token") !== undefined) {
       url = `${baseUrl}/video/view/${id}`;
@@ -59,13 +77,71 @@ function Video() {
     }
   }
 
-  useEffect(() => {
-    if (!addedView) {
-      AddVideoView();
+  async function LikeVideo() {
+    let url = `${baseUrl}/user/like/video/${id}`;
+    try {
+      await SendJsonPostRequest(url);
+      setIsLikedVideo(true);
+      setIsDislikedVideo(false);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      GetVideoDetails();
     }
+  }
 
-    console.log(addedView);
-  }, [addedView]);
+  async function DislikeVideo() {
+    let url = `${baseUrl}/user/dislike/video/${id}`;
+    try {
+      await SendJsonPostRequest(url);
+      setIsLikedVideo(false);
+      setIsDislikedVideo(true);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      GetVideoDetails();
+    }
+  }
+
+  async function UndislikeVideo() {
+    let url = `${baseUrl}/user/undislike/${id}`;
+    try {
+      await SendJsonPostRequest(url);
+      setIsDislikedVideo(false);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      GetVideoDetails();
+    }
+  }
+
+  async function UnLikeVideo() {
+    let url = `${baseUrl}/user/unlike/${id}`;
+    try {
+      await SendJsonPostRequest(url);
+      setIsLikedVideo(false);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      GetVideoDetails();
+    }
+  }
+
+  async function onClickLikeButton() {
+    if (isLikedVideo) {
+      UnLikeVideo();
+    } else {
+      LikeVideo();
+    }
+  }
+
+  async function onClickDislikeButton() {
+    if (isDislikedVideo) {
+      UndislikeVideo();
+    } else {
+      DislikeVideo();
+    }
+  }
 
   return videoNotFound ? (
     <Typography variant="h1"> Video Not Found</Typography>
@@ -90,9 +166,9 @@ function Video() {
             {NumberShorterner(video.viewCount)} views •{" "}
             {ShowFullDate(video.date)}
           </Info>
-          <Buttons>
-            <Button>
-              <Box display="flex" alignItems="center" mr={1}>
+          <Stack spacing={1} direction="row">
+            <Button onClick={onClickLikeButton}>
+              <Box display="flex" alignItems="center">
                 {isLikedVideo ? <ThumbUp /> : <ThumbUpOutlined />}
 
                 <Typography color={"white"} ml={1}>
@@ -101,8 +177,8 @@ function Video() {
               </Box>
             </Button>
 
-            <Button>
-              <Box display="flex" alignItems="center" mr={1}>
+            <Button onClick={onClickDislikeButton}>
+              <Box display="flex" alignItems="center">
                 {isDislikedVideo ? <ThumbDown /> : <ThumbDownOffAltOutlined />}
 
                 <Typography color={"white"} ml={1}>
@@ -110,19 +186,20 @@ function Video() {
                 </Typography>
               </Box>
             </Button>
-          </Buttons>
+          </Stack>
         </Details>
         <Hr />
         <Channel>
           <ChannelInfo>
-            <Image src={profile} />
+            <Image
+              src={`${baseUrl}/image?imagePath=${video.user?.profilePicture}`}
+            />
             <ChannelDetail>
-              <ChannelName>Jay</ChannelName>
-              <ChannelCounter>20 subscribers</ChannelCounter>
+              <ChannelName>{video.user?.name}</ChannelName>
+              <ChannelCounter>{video.user?.followersCount}</ChannelCounter>
               <Description>{video.description}</Description>
             </ChannelDetail>
           </ChannelInfo>
-          <Subscribe>SUBSCRIBE</Subscribe>
         </Channel>
         <Hr />
         <Comment />
@@ -151,19 +228,6 @@ const Details = styled.div`
 
 const Info = styled.span`
   color: #aaaaaa;
-`;
-
-const Buttons = styled.div`
-  display: flex;
-  gap: 20px;
-  color: #ffffff;
-`;
-
-const Button = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
 `;
 
 const Hr = styled.hr`

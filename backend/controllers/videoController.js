@@ -93,14 +93,15 @@ exports.getVideoDetails = async (req, res, next) => {
   try {
     const videoId = req.params.videoId;
 
-    const video = await videoRepository.GetVideoByIdIfExists(videoId);
+    let video = await videoRepository.GetVideoByIdIfExists(videoId);
     if (!video) {
       throw customError("Video not found");
     }
-    video.populate("user");
+
+    video = await video.populate("user");
 
     const videoDetails = {
-      id: video._id,
+      id: video.id,
       title: video.title,
       thumbnail: video.thumbnailUrl,
       description: video.description,
@@ -113,7 +114,8 @@ exports.getVideoDetails = async (req, res, next) => {
       user: {
         id: video.user._id,
         name: video.user.name,
-        followers: video.user.followCount,
+        followers: video.user.followersCount,
+        profilePicture: video.user.profilePictureUrl,
       },
     };
 
@@ -289,7 +291,6 @@ exports.postUserAddView = async (req, res, next) => {
       const currentDate = new Date();
       const fiveMinutesAgo = new Date(currentDate - 5 * 60 * 1000);
 
-      console.log("demslfkasmdfasdf", videoView);
       if (videoView.date > fiveMinutesAgo) {
         res.status(200).send({ msg: ResponseMessages.ViewedVideo });
         return;
@@ -322,6 +323,33 @@ exports.postGuestAddView = async (req, res, next) => {
     await videoRepository.IncreaseViewCount(videoId);
 
     res.status(200).send(ResponseMessages.ViewedVideo);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getVideoComments = async (req, res, next) => {
+  try {
+    const videoId = req.params.videoId;
+
+    const video = await videoRepository.GetVideoByIdIfExists(videoId);
+    if (!video) {
+      throw customError(ResponseMessages.VideoNotFound, 404);
+    }
+
+    let comments = await commentRespository.GetVideoComments(videoId);
+
+    comments = await comments.populate("userId");
+
+    res.send({
+      comments: comments.map((c) => ({
+        text: c.comment,
+        user: {
+          name: c.userId.name,
+          profilePicture: c.userId.profilePicture,
+        },
+      })),
+    });
   } catch (error) {
     next(error);
   }
