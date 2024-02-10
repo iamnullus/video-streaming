@@ -1,21 +1,19 @@
-import React from 'react';
+import React from "react";
 import styled from "styled-components";
+import { baseUrl } from "../services/api/constants/endpointsConstants";
 
-
-function Comment() {
+function Comment({ comment }) {
   return (
     <Container>
-      <Avatar />
+      <Avatar
+        src={`${baseUrl}/image?imagePath=${comment.user?.profilePicture}`}
+      />
       <Details>
-        <Name>
-          Josiah Opaleke <Date>2 hours ago</Date>
-        </Name>
-        <Text>
-          This is the best video out there for everyone on youtube
-        </Text>
+        <Name>{comment.user.name}</Name>
+        <Text>{comment.text}</Text>
       </Details>
-      </Container>
-  )
+    </Container>
+  );
 }
 
 //STYLES FOR COMPONTENTS

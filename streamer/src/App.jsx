@@ -1,8 +1,7 @@
-// import { useState } from 'react';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import styled from "styled-components";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Menu, Navbar } from "./components";
-import { Home, Video, Login, Signup } from "./pages";
+import { Menu } from "./components";
+import { Home, Login, Signup, Video } from "./pages";
 
 const Main = styled.div`
   flex: 7;
@@ -23,7 +22,6 @@ function App() {
       <BrowserRouter>
         <Menu />
         <Main>
-          <Navbar />
           <Wrapper>
             <Routes>
               <Route path="/" />

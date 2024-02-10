@@ -4,7 +4,8 @@ const { Likes } = require("../models/likes");
 class CommentRepository {
   GetComment = async (commentId) => await Comment.findOne({ _id: commentId });
 
-  GetVideoComments = async (videoId) => await Comment.findOne({ videoId });
+  GetVideoComments = async (videoId) =>
+    await Comment.find({ videoId }).populate("userId");
 
   CommentOnVideo = async (userId, videoId, commentMessage) =>
     await Comment.create({

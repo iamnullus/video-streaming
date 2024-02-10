@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import profile from "../assets/12776d2a-368e-4586-a64e-70daa5243e54.jpg";
 import Comment from "../components/Comment";
@@ -11,7 +11,17 @@ import {
 import { useParams } from "react-router-dom";
 import { baseUrl } from "../services/api/constants/endpointsConstants";
 import { SendGetRequest, SendJsonPostRequest } from "../services/api";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Stack,
+  Typography,
+  CircularProgress,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  TextField,
+} from "@mui/material";
 import { NumberShorterner } from "../helpers/numberFormatter";
 import { ShowFullDate } from "../helpers/dateFormatter";
 import { ResponseMessages } from "../services/constants/responseMessages";
@@ -21,18 +31,40 @@ function Video() {
   const [isLikedVideo, setIsLikedVideo] = useState(false);
   const [isDislikedVideo, setIsDislikedVideo] = useState(false);
   const [videoNotFound, setVideoNotFound] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
+
+  const commentInputRef = useRef();
 
   const { id } = useParams();
 
   const videoUrl = `${baseUrl}/video/${id}`;
 
+  async function GetVideoComments() {
+    const url = `${baseUrl}/video/comments/${id}`;
+    try {
+      const { responseData } = await SendGetRequest(url);
+
+      setComments(responseData.comments);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async function GetVideoDetails() {
+    setIsLoading(true);
+
     const url = `${baseUrl}/video/details/${id}`;
     try {
       const { responseData } = await SendGetRequest(url);
       setVideo(responseData);
+
+      GetVideoComments();
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -143,6 +175,31 @@ function Video() {
     }
   }
 
+  async function postComment(e) {
+    e.preventDefault();
+
+    if (isLoadingComments) {
+      return;
+    }
+
+    try {
+      const url = `${baseUrl}/video/comment/${id}`;
+      setIsLoadingComments(true);
+
+      await SendJsonPostRequest(url, {
+        comment: commentInputRef.current.value,
+      });
+
+      commentInputRef.current.value = "";
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoadingComments(false);
+
+      GetVideoComments();
+    }
+  }
+
   return videoNotFound ? (
     <Typography variant="h1"> Video Not Found</Typography>
   ) : (
@@ -154,55 +211,106 @@ function Video() {
             height="640"
             src={videoUrl}
             title={video.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;"
+            allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture;"
             allowFullScreen
           ></iframe>
         </VideoWrapper>
-        <Typography variant="h1" fontSize={24} color={"white"}>
-          {video.title}
-        </Typography>
-        <Details>
-          <Info>
-            {NumberShorterner(video.viewCount)} views •{" "}
-            {ShowFullDate(video.date)}
-          </Info>
-          <Stack spacing={1} direction="row">
-            <Button onClick={onClickLikeButton}>
-              <Box display="flex" alignItems="center">
-                {isLikedVideo ? <ThumbUp /> : <ThumbUpOutlined />}
+        {isLoading ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <Typography variant="h1" fontSize={24} color={"white"}>
+              {video.title}
+            </Typography>
+            <Details>
+              <Info>
+                {NumberShorterner(video.viewCount)} views •{" "}
+                {ShowFullDate(video.date)}
+              </Info>
+              <Stack spacing={1} direction="row">
+                <Button onClick={onClickLikeButton}>
+                  <Box display="flex" alignItems="center">
+                    {isLikedVideo ? <ThumbUp /> : <ThumbUpOutlined />}
 
-                <Typography color={"white"} ml={1}>
-                  {NumberShorterner(video.likeCount)}
-                </Typography>
-              </Box>
-            </Button>
+                    <Typography color={"white"} ml={1}>
+                      {NumberShorterner(video.likeCount)}
+                    </Typography>
+                  </Box>
+                </Button>
 
-            <Button onClick={onClickDislikeButton}>
-              <Box display="flex" alignItems="center">
-                {isDislikedVideo ? <ThumbDown /> : <ThumbDownOffAltOutlined />}
+                <Button onClick={onClickDislikeButton}>
+                  <Box display="flex" alignItems="center">
+                    {isDislikedVideo ? (
+                      <ThumbDown />
+                    ) : (
+                      <ThumbDownOffAltOutlined />
+                    )}
 
-                <Typography color={"white"} ml={1}>
-                  {NumberShorterner(video.dislikesCount)}
-                </Typography>
-              </Box>
-            </Button>
-          </Stack>
-        </Details>
-        <Hr />
-        <Channel>
-          <ChannelInfo>
-            <Image
-              src={`${baseUrl}/image?imagePath=${video.user?.profilePicture}`}
-            />
-            <ChannelDetail>
-              <ChannelName>{video.user?.name}</ChannelName>
-              <ChannelCounter>{video.user?.followersCount}</ChannelCounter>
-              <Description>{video.description}</Description>
-            </ChannelDetail>
-          </ChannelInfo>
-        </Channel>
-        <Hr />
-        <Comment />
+                    <Typography color={"white"} ml={1}>
+                      {NumberShorterner(video.dislikesCount)}
+                    </Typography>
+                  </Box>
+                </Button>
+              </Stack>
+            </Details>
+            <Hr />
+            <Channel>
+              <ChannelInfo>
+                <Image
+                  src={`${baseUrl}/image?imagePath=${video.user?.profilePicture}`}
+                />
+                <ChannelDetail>
+                  <ChannelName>{video.user?.name}</ChannelName>
+                  <ChannelCounter>{video.user?.followersCount}</ChannelCounter>
+                  <Description>{video.description}</Description>
+                </ChannelDetail>
+              </ChannelInfo>
+            </Channel>
+            <Hr />
+            <Typography variant="h4" color={"white"}>
+              Comments
+            </Typography>
+            <form onSubmit={(e) => postComment(e)}>
+              <Stack direction="row" spacing={2}>
+                <TextField
+                  id="email"
+                  label="comment"
+                  variant="standard"
+                  inputProps={{
+                    style: { borderColor: "white", color: "white" },
+                  }}
+                  InputLabelProps={{ style: { color: "white" } }}
+                  inputRef={commentInputRef}
+                  fullWidth
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "white",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "ActiveBorder",
+                      },
+                    },
+                  }}
+                />
+                <Button variant="contained" type="submit">
+                  {isLoadingComments ? <CircularProgress /> : "Upload"}
+                </Button>
+              </Stack>
+            </form>
+            {comments.length > 0 ? (
+              comments.map((comment) => (
+                <div key={comment.id}>
+                  <Comment comment={comment} />
+                </div>
+              ))
+            ) : (
+              <Typography variant="b1" color={"white"}>
+                No Comment on video
+              </Typography>
+            )}
+          </>
+        )}
       </Content>
     </Container>
   );

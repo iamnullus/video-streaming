@@ -1,23 +1,17 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-
+import React from "react";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
     <Container>
       <Wrapper>
         <Search>
-          <Input type='text' placeholder='Search' />
+          <Input type="text" placeholder="Search" />
         </Search>
-        <Link to='login' style={{ textDecoration: 'none' }}>
-          <Button>
-            Sign In
-          </Button>
-        </Link>
       </Wrapper>
     </Container>
-  )
+  );
 }
 
 // STYLES FOR COMPONENTS

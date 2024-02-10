@@ -339,14 +339,14 @@ exports.getVideoComments = async (req, res, next) => {
 
     let comments = await commentRespository.GetVideoComments(videoId);
 
-    comments = await comments.populate("userId");
-
     res.send({
       comments: comments.map((c) => ({
+        id: c.id,
         text: c.comment,
         user: {
+          id: c.userId.id,
           name: c.userId.name,
-          profilePicture: c.userId.profilePicture,
+          profilePicture: c.userId.profilePictureUrl,
         },
       })),
     });
