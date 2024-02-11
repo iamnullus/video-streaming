@@ -2,6 +2,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import styled from "styled-components";
 import { Menu } from "./components";
 import { Home, Login, Signup, Video } from "./pages";
+import Library from "./pages/Library";
+import UploadVideoPage from "./pages/Upload";
 
 const Main = styled.div`
   flex: 7;
@@ -28,6 +30,8 @@ function App() {
               <Route index element={<Home />} />
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<Signup />} />
+              <Route path="library" element={<Library />} />
+              <Route path="upload" element={<UploadVideoPage />} />
               <Route path="video">
                 <Route path=":id" element={<Video />} />
               </Route>

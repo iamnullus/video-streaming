@@ -14,6 +14,9 @@ class UserRepository {
 
   DecreaseFollowingCount = async (userId) =>
     await User.updateOne({ _id: userId }, { $inc: { followingCount: -1 } });
+
+  GetUsersInIdArray = async (userIds) =>
+    await User.find({ _id: { $in: userIds } });
 }
 
 exports.UserRepository = UserRepository;

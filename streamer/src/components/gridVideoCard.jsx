@@ -22,16 +22,33 @@ const GridVideoCard = ({ video }) => {
   }
 
   return (
-    <Card key={video.id} sx={{ bgcolor: "transparent" }} onClick={OnClickCard}>
+    <Card
+      key={video.id}
+      sx={{
+        bgcolor: "white",
+        width: 300,
+        height: 240,
+      }}
+      onClick={OnClickCard}
+    >
       <CardMedia
         component="img"
         alt="thumbnail"
-        height="140"
+        height="150"
         image={`${baseUrl}/image?imagePath=${video.thumbnail}`}
       />
 
       <CardContent>
-        <Box display="flex" alignItems="center" sx={{ bgcolor: "inherit" }}>
+        <Box
+          display="flex"
+          alignItems="center"
+          sx={{
+            bgcolor: "inherit",
+            overflow: "hidden", // Hide overflowing text
+            textOverflow: "ellipsis", // Add ellipses for overflow
+            whiteSpace: "nowrap", // Prevent text from wrapping
+          }}
+        >
           <Image
             src={`${baseUrl}/image?imagePath=${video.user.profilePicture}`}
             alt="user Profile Picture"
@@ -39,40 +56,45 @@ const GridVideoCard = ({ video }) => {
             height={20}
             sx={{ borderRadius: "50%" }}
           />
-          <Typography variant="body2" component="div" ml={1} color={"white"}>
+          <Typography
+            variant="body2"
+            component="div"
+            ml={1}
+            // color={"white"}
+            sx={{
+              overflow: "hidden", // Hide overflowing text
+              textOverflow: "ellipsis", // Add ellipses for overflow
+              whiteSpace: "nowrap", // Prevent text from wrapping
+              width: "100%", // Ensure title takes full width
+            }}
+          >
             {video.title}
           </Typography>
         </Box>
         <Box display="flex" alignItems="center" sx={{ bgcolor: "inherit" }}>
           <Box display="flex" alignItems="center" mr={1}>
-            <Icon color="primary" sx={{ color: "white" }} wr={0.5}>
+            <Icon color="primary" sx={{ color: "black" }} wr={0.5}>
               <ThumbUpOffAltIcon />
             </Icon>
-            <Typography color={"white"}>
-              {NumberShorterner(video.likeCount)}
-            </Typography>
+            <Typography>{NumberShorterner(video.likeCount)}</Typography>
           </Box>
           <Box display="flex" alignItems="center" mr={1}>
-            <Icon color="primary" sx={{ color: "white" }}>
+            <Icon color="primary" sx={{ color: "black" }}>
               <ThumbDownOffAltIcon />
             </Icon>
-            <Typography color={"white"}>
-              {NumberShorterner(video.dislikeCount)}
-            </Typography>
+            <Typography>{NumberShorterner(video.dislikeCount)}</Typography>
           </Box>
           <Box display="flex" alignItems="center" mr={1}>
-            <Icon color="primary" sx={{ color: "white" }}>
+            <Icon color="primary" sx={{ color: "black" }}>
               <OndemandVideo />
             </Icon>
-            <Typography color={"white"}>
-              {NumberShorterner(video.viewCount)}
-            </Typography>
+            <Typography>{NumberShorterner(video.viewCount)}</Typography>
           </Box>
           <Box display="flex" alignItems="center" mr={1}>
-            <Icon color="primary" sx={{ color: "white" }}>
+            <Icon color="primary" sx={{ color: "black" }}>
               <CalendarMonth />
             </Icon>
-            <Typography color={"white"}>{DateFormatter(video.date)}</Typography>
+            <Typography>{DateFormatter(video.date)}</Typography>
           </Box>
         </Box>
       </CardContent>

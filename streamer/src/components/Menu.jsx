@@ -1,10 +1,25 @@
 import { Home } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import logoImage from "../assets/stream.png";
 
 function Menu() {
+  const navigate = useNavigate();
+
+  async function onClickLogOut(e) {
+    e.preventDefault();
+
+    try {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+
+      navigate("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  }
+
   return (
     <Container>
       <Wrapper>
@@ -15,15 +30,35 @@ function Menu() {
           </Logo>
         </Link>
         <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-          <Item>
-            <Home />
-            Home
-          </Item>
+          <Item>Home</Item>
         </Link>
-        {localStorage.getItem("token") === undefined && (
+        <Link
+          to="/library"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>Library</Item>
+        </Link>
+
+        {localStorage.getItem("token") === null ? (
           <Link to="login" style={{ textDecoration: "none", color: "inherit" }}>
             <Button>Sign in</Button>
           </Link>
+        ) : (
+          <>
+            <Link
+              to="/upload"
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <Item>Upload</Item>
+            </Link>
+            <Button
+              onClick={(e) => {
+                onClickLogOut(e);
+              }}
+            >
+              Log out
+            </Button>
+          </>
         )}
       </Wrapper>
     </Container>

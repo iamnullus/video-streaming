@@ -4,7 +4,8 @@ class VideoRepository {
   GetVideoByIdIfExists = async (videoId) =>
     await Video.findOne({ _id: videoId });
 
-  GetUserVideos = async (userId) => await Video.find({ userId: userId });
+  GetUserVideos = async (userId) =>
+    await Video.find({ userId: userId }).populate("user");
 
   IncreaseLikeCount = async (videoId) =>
     await Video.updateOne({ _id: videoId }, { $inc: { likeCount: 1 } });
@@ -26,6 +27,8 @@ class VideoRepository {
 
   IncreaseViewCount = async (videoId) =>
     await Video.updateOne({ _id: videoId }, { $inc: { viewCount: 1 } });
+
+  GetDistinctUsers = async () => await Video.distinct("user").populate("user");
 }
 
 exports.VideoRepository = VideoRepository;

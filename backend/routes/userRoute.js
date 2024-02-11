@@ -38,4 +38,6 @@ router.post(
 
 router.get("/details/:userId", userController.getUserdetails);
 
+router.get("/distinct", userController.getUsersWithVideos);
+
 module.exports = router;

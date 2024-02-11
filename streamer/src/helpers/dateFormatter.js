@@ -11,9 +11,9 @@ exports.DateFormatter = (date) => {
   const years = Math.floor(days / 365);
 
   if (seconds < 60) {
-    return `${seconds} ${seconds === 1 ? "second" : "seconds"}`;
+    return `${seconds} ${seconds === 1 ? "sec" : "secs"}`;
   } else if (minutes < 60) {
-    return `${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
+    return `${minutes} ${minutes === 1 ? "min" : "mins"}`;
   } else if (hours < 24) {
     return `${hours} ${hours === 1 ? "hour" : "hours"}`;
   } else if (days < 365) {

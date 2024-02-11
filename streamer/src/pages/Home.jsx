@@ -53,9 +53,9 @@ function Home() {
   return (
     <Container>
       {videos.map((v) => (
-        <div key={v.id}>
+        <VideoCardWrapper key={v.id}>
           <GridVideoCard video={v} />
-        </div>
+        </VideoCardWrapper>
       ))}
 
       <div id="intersectionObserverTarget" style={{ height: "20px" }} />
@@ -64,11 +64,24 @@ function Home() {
   );
 }
 
-//STYLES FOR COMPONTENTS
+//STYLES FOR COMPONENTS
 const Container = styled.div`
   display: flex;
-  justify-content: space-between;
   flex-wrap: wrap;
+`;
+
+const VideoCardWrapper = styled.div`
+  flex-basis: calc(20% - 20px);
+  margin-bottom: 20px;
+  margin-right: 20px;
+
+  @media screen and (max-width: 1024px) {
+    flex-basis: calc(33.33% - 20px);
+  }
+
+  @media screen and (max-width: 600px) {
+    flex-basis: calc(100% - 20px);
+  }
 `;
 
 export default Home;

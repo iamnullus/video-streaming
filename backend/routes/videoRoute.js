@@ -48,4 +48,6 @@ router.post("/view/:videoId", userAuth, videoController.postUserAddView);
 
 router.post("/guest/view/:videoId", userAuth, videoController.postGuestAddView);
 
+router.get("/get/user/viewed", userAuth, videoController.getUserViewedVideos);
+
 module.exports = router;

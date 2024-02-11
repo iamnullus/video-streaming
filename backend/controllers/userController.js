@@ -267,3 +267,15 @@ exports.getUserdetails = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getUsersWithVideos = async (req, res, next) => {
+  try {
+    const userIds = await videoRepository.GetDistinctUsers();
+
+    const users = await userRepository.GetUsersInIdArray(userIds);
+
+    res.send(users);
+  } catch (error) {
+    next(error);
+  }
+};

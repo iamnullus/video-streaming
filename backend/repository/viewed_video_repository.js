@@ -8,8 +8,14 @@ class ViewedVideoRepository {
     });
 
   GetUserViewedVideos = async (userId) =>
-    (await ViewedVideo.find({ userId }).populate("videoId")).map((vv) => ({
-      videoId: vv.videoId,
+    (
+      await ViewedVideo.find({ userId })
+        .populate("videoId")
+        .populate("userId")
+        .sort({ date: -1 })
+    ).map((vv) => ({
+      video: vv.videoId,
+      user: vv.userId,
       date: vv.date,
     }));
 

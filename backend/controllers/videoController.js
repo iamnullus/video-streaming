@@ -16,6 +16,55 @@ var videoRepository = new VideoRepository();
 var commentRespository = new CommentRepository();
 var viewedVideoRepository = new ViewedVideoRepository();
 
+exports.getUserViewedVideos = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+
+    let videosViewed = await viewedVideoRepository.GetUserViewedVideos(userId);
+
+    const checkedUserAndVideos = [];
+
+    videosViewed = videosViewed.filter((vv) => {
+      if (
+        !checkedUserAndVideos.some(
+          (item) => item.user === vv.user.id && item.video === vv.video.id
+        )
+      ) {
+        checkedUserAndVideos.push({
+          user: vv.user.id,
+          video: vv.video.id,
+        });
+
+        return true;
+      }
+      return false;
+    });
+
+    const videoDto = videosViewed.map((videoViewed) => ({
+      id: videoViewed.video.id,
+      title: videoViewed.video.title,
+      thumbnail: videoViewed.video.thumbnailUrl,
+      description: videoViewed.video.description,
+      likeCount: videoViewed.video.likeCount,
+      dislikeCount: videoViewed.video.dislikeCount,
+      commentCount: videoViewed.video.commentCount,
+      id: videoViewed.video.id,
+      viewCount: videoViewed.video.viewCount,
+      date: videoViewed.video.date,
+      user: {
+        id: videoViewed.user._id,
+        name: videoViewed.user.name,
+        followers: videoViewed.user.followersCount,
+        profilePicture: videoViewed.user.profilePictureUrl,
+      },
+    }));
+
+    res.status(200).send({ videos: videoDto });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.postUploadVideo = async (req, res, next) => {
   try {
     const valErr = ValidationError(req);
@@ -174,6 +223,7 @@ exports.getUserVideos = async (req, res, next) => {
     }
 
     const videos = await videoRepository.GetUserVideos(user._id);
+    videos.sort();
 
     const videosDto = videos.map((v) => {
       return {
@@ -185,10 +235,16 @@ exports.getUserVideos = async (req, res, next) => {
         dislikeCount: v.dislikeCount,
         commentsCount: v.commentsCount,
         viewCount: v.viewCount,
+        user: {
+          id: v.user._id,
+          name: v.user.name,
+          profilePicture: v.user.profilePictureUrl,
+        },
+        date: v.date,
       };
     });
 
-    res.status(200).send(videosDto);
+    res.status(200).send({ videos: videosDto });
   } catch (error) {
     next(error);
   }
