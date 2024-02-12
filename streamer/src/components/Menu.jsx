@@ -1,8 +1,9 @@
-import { Home } from "@mui/icons-material";
-import { Button } from "@mui/material";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import logoImage from "../assets/stream.png";
+import Button from "@mui/material/Button";
+import { Box } from "@mui/material";
 
 function Menu() {
   const navigate = useNavigate();
@@ -22,59 +23,69 @@ function Menu() {
 
   return (
     <Container>
-      <Wrapper>
+      <LogoWrapper>
         <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
           <Logo>
             <Image src={logoImage} />
             STREAMER
           </Logo>
         </Link>
-        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-          <Item>Home</Item>
-        </Link>
-        <Link
+      </LogoWrapper>
+      <NavWrapper>
+        <NavItem to="/" style={{ textDecoration: "none", color: "inherit" }}>
+          Home
+        </NavItem>
+        <NavItem
           to="/library"
           style={{ textDecoration: "none", color: "inherit" }}
         >
-          <Item>Library</Item>
-        </Link>
-
+          Library
+        </NavItem>
         {localStorage.getItem("token") === null ? (
-          <Link to="login" style={{ textDecoration: "none", color: "inherit" }}>
-            <Button>Sign in</Button>
-          </Link>
+          <NavItem
+            to="login"
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <Button variant="contained" color="primary">
+              Sign in
+            </Button>
+          </NavItem>
         ) : (
           <>
-            <Link
+            <NavItem
               to="/upload"
               style={{ textDecoration: "none", color: "inherit" }}
             >
-              <Item>Upload</Item>
-            </Link>
+              Upload
+            </NavItem>
             <Button
-              onClick={(e) => {
-                onClickLogOut(e);
-              }}
+              variant="contained"
+              color="secondary"
+              onClick={onClickLogOut}
             >
               Log out
             </Button>
           </>
         )}
-      </Wrapper>
+      </NavWrapper>
     </Container>
   );
 }
 
 // STYLES FOR COMPONENTS
-const Container = styled.div`
-  background-color: #0f0f0f;
+const Container = styled(Box)`
+  background-color: #1a1a1a;
   color: white;
   font-size: 14px;
-  top: 0;
+  width: 200px;
   height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
 `;
 
-const Wrapper = styled.div`
+const LogoWrapper = styled.div`
   padding: 18px 12px;
 `;
 
@@ -82,24 +93,34 @@ const Logo = styled.div`
   display: flex;
   align-items: center;
   font-weight: bold;
-  margin-bottom: 25px;
-`;
-
-const Item = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  cursor: pointer;
-  padding: 7.5px 10px;
-
-  &:hover {
-    background-color: #3d3d3d;
-  }
 `;
 
 const Image = styled.img`
   width: 50px;
   height: 50px;
+  margin-right: 10px;
+`;
+
+const NavWrapper = styled.nav`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+`;
+
+const NavItem = styled(Link)`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  padding: 7.5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #3d3d3d;
+  }
 `;
 
 export default Menu;

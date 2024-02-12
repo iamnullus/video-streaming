@@ -40,4 +40,10 @@ router.get("/details/:userId", userController.getUserdetails);
 
 router.get("/distinct", userController.getUsersWithVideos);
 
+router.get(
+  "/followStatus/:userId",
+  userAuth,
+  userController.getUserFollowStatus
+);
+
 module.exports = router;

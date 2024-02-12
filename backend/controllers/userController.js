@@ -279,3 +279,28 @@ exports.getUsersWithVideos = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getUserFollowStatus = async (req, res, next) => {
+  try {
+    const followUserId = req.params.userId;
+    const userId = req.userId;
+
+    if (userId === followUserId) {
+      throw customError(ResponseMessages.UserCannotFollowThemSelves);
+    }
+
+    const followUser = await userRepository.GetUserByIdIfExists(followUserId);
+    if (!followUser) {
+      throw customError(ResponseMessages.userNotFound);
+    }
+
+    const isFollow = await followRepository.IsUserFollowing(
+      userId,
+      followUserId
+    );
+
+    res.status(200).send({ isFollow });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -1,29 +1,25 @@
-import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-import profile from "../assets/12776d2a-368e-4586-a64e-70daa5243e54.jpg";
-import Comment from "../components/Comment";
 import {
-  ThumbUpOutlined,
+  ThumbDown,
   ThumbDownOffAltOutlined,
   ThumbUp,
-  ThumbDown,
+  ThumbUpOutlined,
 } from "@mui/icons-material";
-import { useParams } from "react-router-dom";
-import { baseUrl } from "../services/api/constants/endpointsConstants";
-import { SendGetRequest, SendJsonPostRequest } from "../services/api";
 import {
   Box,
   Button,
-  Stack,
-  Typography,
   CircularProgress,
-  InputLabel,
-  OutlinedInput,
-  InputAdornment,
+  Stack,
   TextField,
+  Typography,
 } from "@mui/material";
-import { NumberShorterner } from "../helpers/numberFormatter";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import styled from "styled-components";
+import Comment from "../components/Comment";
 import { ShowFullDate } from "../helpers/dateFormatter";
+import { NumberShorterner } from "../helpers/numberFormatter";
+import { SendGetRequest, SendJsonPostRequest } from "../services/api";
+import { baseUrl } from "../services/api/constants/endpointsConstants";
 import { ResponseMessages } from "../services/constants/responseMessages";
 
 function Video() {
@@ -34,12 +30,54 @@ function Video() {
   const [comments, setComments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [followStatus, setFollowStatus] = useState(false);
+  const [isLoadingFollowing, setIsLoadingFollowing] = useState(false);
+  const [userId, setUserId] = useState();
+  const [followError, setFollowError] = useState(false);
 
   const commentInputRef = useRef();
 
   const { id } = useParams();
 
   const videoUrl = `${baseUrl}/video/${id}`;
+
+  const navigate = useNavigate();
+  async function NavigateToUser(userId) {
+    navigate(`/user/${userId}`);
+  }
+
+  async function OnClickFollowButton() {
+    setIsLoadingFollowing(true);
+
+    let url;
+    if (followStatus) {
+      url = `${baseUrl}/user/unfollow/${userId}`;
+    } else {
+      url = `${baseUrl}/user/follow/${userId}`;
+    }
+
+    try {
+      const { responseData } = await SendJsonPostRequest(url);
+
+      GetUserFollowingStatus(userId);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoadingFollowing(false);
+    }
+  }
+
+  async function GetUserFollowingStatus(userId) {
+    const url = `${baseUrl}/user/followStatus/${userId}`;
+    try {
+      const { responseData } = await SendGetRequest(url);
+
+      setFollowStatus(responseData.isFollow);
+    } catch (error) {
+      setFollowError(true);
+      console.error(error);
+    }
+  }
 
   async function GetVideoComments() {
     const url = `${baseUrl}/video/comments/${id}`;
@@ -59,6 +97,9 @@ function Video() {
     try {
       const { responseData } = await SendGetRequest(url);
       setVideo(responseData);
+      setUserId(responseData.user.id);
+
+      GetUserFollowingStatus(responseData.user.id);
 
       GetVideoComments();
     } catch (error) {
@@ -257,13 +298,42 @@ function Video() {
             <Channel>
               <ChannelInfo>
                 <Image
+                  onClick={() => {
+                    NavigateToUser(video.user?.id);
+                  }}
                   src={`${baseUrl}/image?imagePath=${video.user?.profilePicture}`}
                 />
                 <ChannelDetail>
-                  <ChannelName>{video.user?.name}</ChannelName>
+                  <ChannelName
+                    onClick={() => {
+                      NavigateToUser(video.user?.id);
+                    }}
+                  >
+                    {video.user?.name}
+                  </ChannelName>
                   <ChannelCounter>{video.user?.followersCount}</ChannelCounter>
                   <Description>{video.description}</Description>
                 </ChannelDetail>
+                {!followError && (
+                  <>
+                    {localStorage.getItem("token") !== null && (
+                      <div style={{ marginTop: "10px" }}>
+                        <Button
+                          variant="contained"
+                          onClick={OnClickFollowButton}
+                        >
+                          {isLoadingFollowing ? (
+                            <CircularProgress />
+                          ) : followStatus ? (
+                            "Unfollow"
+                          ) : (
+                            "Follow"
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                )}
               </ChannelInfo>
             </Channel>
             <Hr />

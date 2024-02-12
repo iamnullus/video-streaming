@@ -1,9 +1,12 @@
+import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import styled from "styled-components";
 import { Menu } from "./components";
 import { Home, Login, Signup, Video } from "./pages";
 import Library from "./pages/Library";
 import UploadVideoPage from "./pages/Upload";
+import UserPage from "./pages/User";
+import Box from "@mui/system"; // Import Box for layout
 
 const Main = styled.div`
   flex: 7;
@@ -23,7 +26,7 @@ function App() {
     <Container>
       <BrowserRouter>
         <Menu />
-        <Main>
+        <Main sx={{ overflowY: "auto" }}>
           <Wrapper>
             <Routes>
               <Route path="/" />
@@ -34,6 +37,9 @@ function App() {
               <Route path="upload" element={<UploadVideoPage />} />
               <Route path="video">
                 <Route path=":id" element={<Video />} />
+              </Route>
+              <Route path="user">
+                <Route path=":id" element={<UserPage />} />
               </Route>
             </Routes>
           </Wrapper>
